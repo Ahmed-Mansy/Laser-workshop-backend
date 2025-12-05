@@ -91,21 +91,25 @@ WSGI_APPLICATION = 'laser_workshop.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
 
-if config('DATABASE_URL', default=None):
-    DATABASES = {
+DATABASES = {
         'default': dj_database_url.config(conn_max_age=600)
     }
-else:
-    DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': config('DB_NAME', default='laser_workshop'),
-        'USER': config('DB_USER', default='postgres'),
-        'PASSWORD': config('DB_PASSWORD', default='postgres'),
-        'HOST': config('DB_HOST', default='localhost'),
-        'PORT': config('DB_PORT', default='5432'),
-        }
-    }
+
+# if config('DATABASE_URL', default=None):
+#     DATABASES = {
+#         'default': dj_database_url.config(conn_max_age=600)
+#     }
+# else:
+#     DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.postgresql',
+#         'NAME': config('DB_NAME', default='laser_workshop'),
+#         'USER': config('DB_USER', default='postgres'),
+#         'PASSWORD': config('DB_PASSWORD', default='postgres'),
+#         'HOST': config('DB_HOST', default='localhost'),
+#         'PORT': config('DB_PORT', default='5432'),
+#         }
+#     }
 
 
 
@@ -197,3 +201,4 @@ SIMPLE_JWT = {
 # Production security (for HTTPS on Railway/Render)
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 CSRF_TRUSTED_ORIGINS = ['https://*.up.railway.app', 'https://*.onrender.com']
+STATICFILES_STORAGE = 'django.contrib.staticfiles.storage.StaticFilesStorage'
