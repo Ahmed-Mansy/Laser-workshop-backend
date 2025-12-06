@@ -91,25 +91,25 @@ WSGI_APPLICATION = 'laser_workshop.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
 
-DATABASES = {
-        'default': dj_database_url.config(conn_max_age=600)
-    }
-
-# if config('DATABASE_URL', default=None):
-#     DATABASES = {
+# DATABASES = {
 #         'default': dj_database_url.config(conn_max_age=600)
 #     }
-# else:
-#     DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.postgresql',
-#         'NAME': config('DB_NAME', default='laser_workshop'),
-#         'USER': config('DB_USER', default='postgres'),
-#         'PASSWORD': config('DB_PASSWORD', default='postgres'),
-#         'HOST': config('DB_HOST', default='localhost'),
-#         'PORT': config('DB_PORT', default='5432'),
-#         }
-#     }
+
+if config('DATABASE_URL', default=None):
+    DATABASES = {
+        'default': dj_database_url.config(conn_max_age=600)
+    }
+else:
+    DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': config('DB_NAME', default='laser_workshop'),
+        'USER': config('DB_USER', default='postgres'),
+        'PASSWORD': config('DB_PASSWORD', default='postgres'),
+        'HOST': config('DB_HOST', default='localhost'),
+        'PORT': config('DB_PORT', default='5432'),
+        }
+    }
 
 
 
@@ -181,10 +181,17 @@ REST_FRAMEWORK = {
 }
 
 # CORS Configuration
-CORS_ALLOWED_ORIGINS = config(
-    'CORS_ALLOWED_ORIGINS',
-    default='http://localhost:4200,http://127.0.0.1:4200'
-).split(',')
+# CORS_ALLOWED_ORIGINS = config(
+#     'CORS_ALLOWED_ORIGINS',
+#     default='http://localhost:4200,http://127.0.0.1:4200'
+# ).split(',')
+
+CORS_ALLOWED_ORIGINS = [
+    "https://laser-workshop.vercel.app",  
+    "http://localhost:4200",
+    "http://127.0.0.1:4200",
+]
+
 
 CORS_ALLOW_CREDENTIALS = True
 
