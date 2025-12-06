@@ -195,6 +195,19 @@ CORS_ALLOWED_ORIGINS = [
 
 CORS_ALLOW_CREDENTIALS = True
 
+# Allow CORS requests to access media files
+CORS_ALLOW_HEADERS = [
+    'accept',
+    'accept-encoding',
+    'authorization',
+    'content-type',
+    'dnt',
+    'origin',
+    'user-agent',
+    'x-csrftoken',
+    'x-requested-with',
+]
+
 # JWT Configuration
 SIMPLE_JWT = {
     'ACCESS_TOKEN_LIFETIME': timedelta(minutes=config('JWT_ACCESS_TOKEN_LIFETIME', default=60, cast=int)),
@@ -207,5 +220,10 @@ SIMPLE_JWT = {
 
 # Production security (for HTTPS on Railway/Render)
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
-CSRF_TRUSTED_ORIGINS = ['https://*.up.railway.app', 'https://*.onrender.com']
+CSRF_TRUSTED_ORIGINS = [
+    'https://*.up.railway.app', 
+    'https://*.onrender.com',
+    'https://laser-workshop.vercel.app',
+    'https://*.vercel.app',
+]
 STATICFILES_STORAGE = 'django.contrib.staticfiles.storage.StaticFilesStorage'
