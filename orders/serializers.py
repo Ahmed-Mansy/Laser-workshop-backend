@@ -109,6 +109,20 @@ class OrderUpdateStatusSerializer(serializers.ModelSerializer):
         model = Order
         fields = ['status']
     
+    def validate(self, attrs):
+        """Check requirements before status change"""
+        new_status = attrs.get('status')
+        
+        # Check price requirement for DELIVERED status
+        if new_status == 'DELIVERED':
+            # Check price on instance since it's not in validated_data
+            if not self.instance.price:
+                raise serializers.ValidationError({
+                    'status': 'Cannot mark as Delivered: Order price is required. Please edit the order to add a price first.'
+                })
+        
+        return attrs
+    
     def update(self, instance, validated_data):
         """Update the order and set delivered_at when status changes to DELIVERED"""
         new_status = validated_data.get('status')
