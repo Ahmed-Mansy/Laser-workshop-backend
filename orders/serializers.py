@@ -118,7 +118,7 @@ class OrderUpdateStatusSerializer(serializers.ModelSerializer):
             # Check price on instance since it's not in validated_data
             if not self.instance.price:
                 raise serializers.ValidationError({
-                    'status': 'Cannot mark as Delivered: Order price is required. Please edit the order to add a price first.'
+                    'status': 'messages.priceRequired'
                 })
         
         return attrs
