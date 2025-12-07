@@ -202,6 +202,7 @@ REST_FRAMEWORK = {
         'rest_framework.filters.SearchFilter',
         'rest_framework.filters.OrderingFilter',
     ),
+    'EXCEPTION_HANDLER': 'laser_workshop.exceptions.custom_exception_handler',
 }
 
 # CORS Configuration

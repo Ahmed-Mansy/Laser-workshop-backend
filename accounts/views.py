@@ -2,6 +2,7 @@ from rest_framework import status, generics
 from rest_framework.response import Response
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.views import APIView
+from rest_framework.exceptions import AuthenticationFailed, ValidationError
 from rest_framework_simplejwt.tokens import RefreshToken
 from django.contrib.auth import authenticate, get_user_model
 from .serializers import UserSerializer, UserRegistrationSerializer, LoginSerializer
@@ -45,10 +46,7 @@ class LoginView(APIView):
                 'user': user_serializer.data
             }, status=status.HTTP_200_OK)
         
-        return Response(
-            {'error': 'Invalid credentials'},
-            status=status.HTTP_401_UNAUTHORIZED
-        )
+        raise AuthenticationFailed('Wrong username or password')
 
 
 class LogoutView(APIView):
@@ -67,11 +65,8 @@ class LogoutView(APIView):
                 {"message": "Successfully logged out."},
                 status=status.HTTP_200_OK
             )
-        except Exception as e:
-            return Response(
-                {"error": "Invalid token"},
-                status=status.HTTP_400_BAD_REQUEST
-            )
+        except Exception:
+            raise ValidationError('Invalid token')
 
 
 class CurrentUserView(generics.RetrieveAPIView):

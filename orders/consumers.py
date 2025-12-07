@@ -2,9 +2,12 @@
 WebSocket consumers for real-time order updates.
 """
 import json
+import logging
 from channels.generic.websocket import AsyncWebsocketConsumer
 from channels.db import database_sync_to_async
 from django.contrib.auth.models import AnonymousUser
+
+logger = logging.getLogger(__name__)
 
 
 class OrderConsumer(AsyncWebsocketConsumer):
@@ -17,9 +20,12 @@ class OrderConsumer(AsyncWebsocketConsumer):
         # Get user from scope (set by AuthMiddlewareStack)
         self.user = self.scope.get('user', AnonymousUser())
         
+        logger.info(f"WebSocket connect attempt - User: {self.user}, Is Anonymous: {self.user.is_anonymous}")
+        
         # Reject anonymous users
         if not self.user or self.user.is_anonymous:
-            await self.close()
+            logger.warning("WebSocket connection rejected: Anonymous user")
+            await self.close(code=4001)
             return
         
         # Join the orders group
@@ -32,6 +38,8 @@ class OrderConsumer(AsyncWebsocketConsumer):
         # Accept the connection
         await self.accept()
         
+        logger.info(f"WebSocket connected successfully for user: {self.user.username}")
+        
         # Send confirmation message
         await self.send(text_data=json.dumps({
             'type': 'connection_established',
@@ -40,6 +48,8 @@ class OrderConsumer(AsyncWebsocketConsumer):
     
     async def disconnect(self, close_code):
         """Handle WebSocket disconnection"""
+        logger.info(f"WebSocket disconnected - Code: {close_code}, User: {getattr(self, 'user', 'Unknown')}")
+        
         # Leave the orders group
         if hasattr(self, 'group_name'):
             await self.channel_layer.group_discard(
@@ -52,6 +62,7 @@ class OrderConsumer(AsyncWebsocketConsumer):
         Receive message from WebSocket.
         For now, we don't process incoming messages from clients.
         """
+        logger.debug(f"WebSocket message received: {text_data}")
         pass
     
     async def order_update(self, event):

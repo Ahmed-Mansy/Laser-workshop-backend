@@ -2,6 +2,7 @@ from rest_framework import viewsets, filters, status
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
+from rest_framework.exceptions import NotFound, ValidationError
 from django_filters.rest_framework import DjangoFilterBackend
 from django.db.models import Count, Sum
 from django.utils import timezone
@@ -31,7 +32,7 @@ class ShiftViewSet(viewsets.ModelViewSet):
         shift = Shift.objects.filter(is_active=True).first()
         if shift:
             return Response(ShiftSerializer(shift).data)
-        return Response({'detail': 'No active shift'}, status=404)
+        raise NotFound('No active shift')
     
     @action(detail=False, methods=['post'])
     def open_new(self, request):
@@ -55,7 +56,7 @@ class ShiftViewSet(viewsets.ModelViewSet):
         """Close a shift and calculate stats"""
         shift = self.get_object()
         if not shift.is_active:
-            return Response({'detail': 'Shift already closed'}, status=400)
+            raise ValidationError('Shift already closed')
         
         self._close_shift(shift, request.user)
         
