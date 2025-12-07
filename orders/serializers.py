@@ -85,7 +85,7 @@ class OrderSerializer(serializers.ModelSerializer):
         
         if status == 'DELIVERED' and not price:
             raise serializers.ValidationError({
-                'price': 'Price is required when order is marked as delivered.'
+                'price': 'messages.priceRequired'
             })
         
         return attrs
@@ -114,7 +114,7 @@ class OrderUpdateStatusSerializer(serializers.ModelSerializer):
         new_status = attrs.get('status')
         
         # Check price requirement for DELIVERED status
-        if new_status == 'DELIVERED':
+        if new_status == 'DELIVERED' and self.instance:
             # Check price on instance since it's not in validated_data
             if not self.instance.price:
                 raise serializers.ValidationError({

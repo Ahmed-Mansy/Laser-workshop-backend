@@ -46,7 +46,7 @@ class LoginView(APIView):
                 'user': user_serializer.data
             }, status=status.HTTP_200_OK)
         
-        raise AuthenticationFailed('Wrong username or password')
+        raise AuthenticationFailed('messages.invalidCredentials')
 
 
 class LogoutView(APIView):
