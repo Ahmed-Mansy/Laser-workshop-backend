@@ -18,10 +18,12 @@ from .permissions import IsManager, CanUpdateOrder, CanDeleteOrder
 
 class ShiftViewSet(viewsets.ModelViewSet):
     """ViewSet for managing work shifts"""
-    queryset = Shift.objects.all()
+    queryset = Shift.objects.all().order_by('-opened_at')  # Newest first
     serializer_class = ShiftSerializer
     permission_classes = [IsAuthenticated, IsManager]
     http_method_names = ['get', 'post']
+    ordering_fields = ['opened_at', 'closed_at']
+    ordering = ['-opened_at']
     
     @action(detail=False, methods=['get'], permission_classes=[IsAuthenticated])
     def current(self, request):

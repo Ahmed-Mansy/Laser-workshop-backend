@@ -36,6 +36,7 @@ ALLOWED_HOSTS = ['*']
 # Application definition
 
 INSTALLED_APPS = [
+    'daphne',  # Must be first for ASGI support
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -48,6 +49,7 @@ INSTALLED_APPS = [
     'rest_framework_simplejwt',
     'corsheaders',
     'django_filters',
+    'channels',  # WebSocket support
     
     # Local apps
     'accounts',
@@ -86,6 +88,28 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'laser_workshop.wsgi.application'
+ASGI_APPLICATION = 'laser_workshop.asgi.application'
+
+# Channel Layers configuration
+# Use Redis in production, in-memory for development
+if config('USE_REDIS', default=False, cast=bool):
+    # Production: Redis-backed channel layer (requires Railway Redis addon)
+    CHANNEL_LAYERS = {
+        'default': {
+            'BACKEND': 'channels_redis.core.RedisChannelLayer',
+            'CONFIG': {
+                "hosts": [config('REDIS_URL', default='redis://localhost:6379')],
+            },
+        },
+    }
+else:
+    # Development: In-memory channel layer (simpler, no Redis needed)
+    CHANNEL_LAYERS = {
+        'default': {
+            'BACKEND': 'channels.layers.InMemoryChannelLayer'
+        }
+    }
+
 
 
 # Database
@@ -191,9 +215,12 @@ CORS_ALLOWED_ORIGINS = [
     "http://localhost:4200",
     "http://127.0.0.1:4200",
     "http://localhost:61786",
-    "http://localhost:63849",
+    "http://localhost:53318",
 ]
 
+# ONLY enable for development - NEVER in production!
+# Set USE_REDIS=True in Railway to disable this
+CORS_ALLOW_ALL_ORIGINS = not config('USE_REDIS', default=False, cast=bool)
 
 CORS_ALLOW_CREDENTIALS = True
 

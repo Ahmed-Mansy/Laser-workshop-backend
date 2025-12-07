@@ -1,1 +1,1 @@
-web: gunicorn laser_workshop.wsgi
+web: daphne -b 0.0.0.0 -p $PORT laser_workshop.asgi:application
