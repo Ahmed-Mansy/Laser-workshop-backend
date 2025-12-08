@@ -51,6 +51,7 @@ class Order(models.Model):
         ('UNDER_WORK', 'Under Work'),
         ('DESIGNING', 'Designing'),
         ('DESIGN_COMPLETED', 'Design Completed'),
+        ('DONE_CUTTING', 'Done Cutting'),
         ('DELIVERED', 'Delivered'),
     )
     
