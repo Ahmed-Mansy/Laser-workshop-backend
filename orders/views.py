@@ -1,7 +1,7 @@
 from rest_framework import viewsets, filters, status
 from rest_framework.decorators import action
 from rest_framework.response import Response
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.exceptions import NotFound, ValidationError
 from django_filters.rest_framework import DjangoFilterBackend
 from django.db.models import Count, Sum
@@ -182,3 +182,36 @@ class OrderViewSet(viewsets.ModelViewSet):
         }
         
         return Response(stats)
+
+    @action(detail=True, methods=['get'], permission_classes=[AllowAny])
+    def track(self, request, pk=None):
+        """
+        Public endpoint for customers to track their order.
+        """
+        try:
+            order = self.get_object()
+        except:
+             # If get_object fails due to permission (though specific perms usually run after)
+             # or not found. 
+             # Since class has IsAuthenticated, get_object might fail if we rely on standard lookup
+             # BUT permission_classes on action overrides class permissions for the check.
+             # However, get_object() uses the queryset which is fine.
+             # Let's double check if we need to manually fetch to avoid auth issues if filtering happens.
+             # Standard get_object() is usually fine if queryset is generic.
+             # Our queryset is Order.objects.all().
+             
+             # Actually safer to just do a direct fetch to be sure
+             try:
+                 order = Order.objects.get(pk=pk)
+             except Order.DoesNotExist:
+                 raise NotFound('Order not found')
+
+        return Response({
+            'id': order.id,
+            'status': order.status,
+            'status_display': order.get_status_display(),
+            'customer_name': order.customer_name,
+            'order_details': order.order_details,
+            'created_at': order.created_at,
+            'delivered_at': order.delivered_at
+        })
